@@ -24,13 +24,14 @@
 
                           <input type="hidden" th:field="*{id}" />
 
+                          <label>書籍名</label>
+                          <input type="text" th:field="*{title}" class="form_input" />
+                          <div th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="error-message"></div>
+
                           <label>ISBN</label>
                           <input type="text" th:field="*{isbn}" class="form_input" />
                           <div th:if="${#fields.hasErrors('isbn')}" th:errors="*{isbn}" class="error-message"></div>
 
-                          <label>書籍名</label>
-                          <input type="text" th:field="*{title}" class="form_input" />
-                          <div th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="error-message"></div>
 
                           <div class="btn_block">
                               <button type="submit" id="submit_btn">更新</button>

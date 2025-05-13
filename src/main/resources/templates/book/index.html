@@ -14,13 +14,20 @@
                 <div class="page_title">書籍一覧</div>
                 <!-- 更新完了メッセージ表示 -->
             <div th:if="${message}" class="flash_message">
-                <p th:text="${message}" style="color: #3a9850; font-weight: bold;"></p>
+                <p th:text="${message}" style="color: #3a9850;"></p>
             </div>
                 <!-- 存在しないエラーメッセージ表示 -->
-                <div th:if="${errorMessage}" class="error_message">
-                    <p th:text="${errorMessage}" style="color: red; font-weight: bold;"></p>
+                <div th:if="${notFoundMessage}" class="message notFound-message">
+                <p th:text="${notFoundMessage}" style="color: red;"></p>
                 </div>
-
+                <!-- 変更なしメッセージ表示 -->
+                <div th:if="${infoMessage}" class="alert alert-info">
+                 <p th:text="${infoMessage}" style="color: red;"></p>
+                </div>
+                <!-- 削除メッセージ表示 -->
+                <div th:if="${deleteMessage}" class="alert delete-message">
+                 <p th:text="${deleteMessage}" style="color: red;"></p>
+                </div>
                 <!--書籍登録遷移-->
                 <div class="top-bar">                  
                     <a th:href="@{/book/add}" class="register-button">
@@ -58,4 +65,12 @@
         </div>
     </div>
     <div th:replace="~{common :: footer}"></div>
+   <script th:inline="javascript">
+    /*<![CDATA[*/
+    const notFound = /*[[${notFound}]]*/ null;
+    if (notFound) {
+        alert(notFound);  // ポップアップ表示
+    }
+    /*]]>*/
+</script>
 </body>
