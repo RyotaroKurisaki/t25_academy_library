@@ -24,7 +24,7 @@ public class BookMstDto {
     private String isbn;
 
     @NotEmpty(message = "書籍名は必須です")
-    @Size(max = 255, message="パスワードは255文字以内で入力してください")
+    @Size(max = 255, message="書籍名は255文字以内で入力してください")
     private String title;
     
     private Timestamp deletedAt;

@@ -54,6 +54,19 @@ public class BookMstService {
 
         this.bookMstRepository.save(bookMst);
     }
+    public BookMst selectById(Long id) {
+        return bookMstRepository.findById(id).orElse(null);
+    }
+    @Transactional
+    public void update(BookMst bookMst) {
+        bookMstRepository.save(bookMst); // saveはupdateも含む
+    }
+    @Transactional
+    public void deleteById(Long id) {
+        bookMstRepository.deleteById(id);
+    }
+
+
 }
 
 

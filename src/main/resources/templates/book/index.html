@@ -12,10 +12,27 @@
             <div th:replace="~{common :: header}"></div>
             <div class="inner_contens">
                 <div class="page_title">書籍一覧</div>
+                <!-- 更新完了メッセージ表示 -->
+            <div th:if="${message}" class="flash_message">
+                <p th:text="${message}" style="color: #3a9850;"></p>
+            </div>
+                <!-- 存在しないエラーメッセージ表示 -->
+                <div th:if="${notFoundMessage}" class="message notFound-message">
+                <p th:text="${notFoundMessage}" style="color: red;"></p>
+                </div>
+                <!-- 変更なしメッセージ表示 -->
+                <div th:if="${infoMessage}" class="alert alert-info">
+                 <p th:text="${infoMessage}" style="color: red;"></p>
+                </div>
+                <!-- 削除メッセージ表示 -->
+                <div th:if="${deleteMessage}" class="alert delete-message">
+                 <p th:text="${deleteMessage}" style="color: red;"></p>
+                </div>
                 <!--書籍登録遷移-->
                 <div class="top-bar">                  
                     <a th:href="@{/book/add}" class="register-button">
-                        <img th:src="@{/images/icons/add.png}" alt="アイコン" style="height: 16px; vertical-align: middle; margin-right: 5px;">
+                        <img th:src="@{/images/icons/add.png}"
+                        alt="アイコン" style="height: 16px; vertical-align: middle; margin-right: 5px;">
                         書籍登録</a>
                 </div>
                
@@ -30,11 +47,12 @@
                         <tbody>
                             <tr th:each="book : ${bookMstList}">
                                 <td>
-                                    <a th:href="@{/book/trash}" class="trash_btn">
-                                        <img class="trash_btn" th:src="@{/images/icons/trash.png}" alt="削除アイコン">
+                                    <a th:href="@{/book/delete/{id}(id=${book.id})}" onclick="return confirm('本当に削除しますか？');" 
+                                    class="trash_btn">
+                                        <img th:src="@{/images/icons/trash.png}" alt="削除アイコン">
                                     </a>
-                                     <a th:href="@{/book/edit}" class="edit_btn">
-                                        <img class="edit_btn" th:src="@{/images/icons/edit.png}" alt="追加アイコン">
+                                     <a th:href="@{/book/edit/{id}(id=${book.id})}" class="edit_btn">
+                                        <img class="edit_btn" th:src="@{/images/icons/edit.png}" alt="編集アイコン">
                                      </a>
                                
                                 <span th:text="${book.title}">書籍名</span>
@@ -47,4 +65,12 @@
         </div>
     </div>
     <div th:replace="~{common :: footer}"></div>
+   <script th:inline="javascript">
+    /*<![CDATA[*/
+    const notFound = /*[[${notFound}]]*/ null;
+    if (notFound) {
+        alert(notFound);  // ポップアップ表示
+    }
+    /*]]>*/
+</script>
 </body>

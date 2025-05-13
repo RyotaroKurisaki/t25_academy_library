@@ -43,3 +43,16 @@
   justify-content: flex-end;
   margin-bottom: 10px;
 }
+.footer {
+    width: 100%;
+    text-align: center;
+    padding: 10px 0;
+    font-size: 12px;
+    color: #666;
+    border-top: 1px solid #ccc;
+    background-color: #f8f8f8;
+
+    position: relative; /* 絶対配置やfloatを防ぐ */
+    clear: both;         /* サイドバー等との干渉を防止 */
+    margin-top: 50px;    /* ページ下にスペースを取る場合 */
+}
