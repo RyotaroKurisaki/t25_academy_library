@@ -1,8 +1,10 @@
 package jp.co.metateam.library.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.validation.Valid;
@@ -53,41 +56,6 @@ public class BookController {
         return "book/add";
     }
 
-   @GetMapping("/book/edit/{id}")
-    public String editBook(@PathVariable("id") Long id, Model model) {
-        // 書籍IDでデータを検索
-        BookMst book = bookMstService.selectById(id);
-
-    // データが存在しない場合、エラーメッセージを表示して戻す
-    if (book == null) {
-        model.addAttribute("errorMessage", "指定された書籍は存在しません");
-        return "book/index"; 
-    }
-
-    // データが存在する場合、編集用のDTOを作成
-    BookMstDto dto = new BookMstDto();
-    dto.setId(book.getId());
-    dto.setIsbn(book.getIsbn());
-    dto.setTitle(book.getTitle());
-
-    model.addAttribute("bookMstDto", dto);
-    return "book/edit";
-}
-
-    @GetMapping("/book/delete/{id}")
-    public String deleteBook(@PathVariable("id") Long id, RedirectAttributes ra) {
-        try {
-            bookMstService.deleteById(id);
-            ra.addFlashAttribute("message", "書籍を削除しました");
-        } catch (Exception e) {
-            ra.addFlashAttribute("message", "書籍の削除に失敗しました");
-        }
-        return "redirect:/book/index";
-    }
-
-
-
-
     @PostMapping("/book/add")
     public String register(@Valid BookMstDto bookMstDto, BindingResult result, RedirectAttributes ra, Model model) {
         try{
@@ -117,14 +85,61 @@ public class BookController {
             return "book/add";    
         }
     } 
+
+
+   @GetMapping("/book/edit/{id}")
+    public String editBook(@PathVariable("id") Long id, Model model, RedirectAttributes ra) {
+
+    Optional<BookMst> bookOpt = bookMstService.findById(id);
+
+    if (bookOpt.isEmpty()) {
+        ra.addFlashAttribute("errorMessage", "書籍が存在しません");
+        return "redirect:/book/index";
+    }
+
+    BookMst book = bookOpt.get();
+
+    if (book.getDletedFlag() != null && book.getDletedFlag()) {
+        ra.addFlashAttribute("errorMessage", "削除済みの書籍です");
+        return "redirect:/book/index";
+    }
+
+    BookMstDto dto = new BookMstDto();
+    dto.setId(book.getId());
+    dto.setIsbn(book.getIsbn());
+    dto.setTitle(book.getTitle());
+
+    model.addAttribute("bookMstDto", dto);
+    return "book/edit";
+}
+
+
+
+    
    @PostMapping("/book/update")
     public String updateBook(
-        @Valid @ModelAttribute("bookMstDto") BookMstDto bookMstDto,
+        @Valid @ModelAttribute("bookMstDto") BookMstDto bookMstDto, Long id,
         BindingResult result,
         Model model,
         RedirectAttributes ra
     ) {
-    BookMst existing = bookMstService.selectById(bookMstDto.getId());
+    Optional<BookMst> bookOpt = bookMstService.findById(id);
+
+    if (bookOpt.isEmpty()) {
+        ra.addFlashAttribute("errorMessage", "書籍が存在しません");
+        return "redirect:/book/index";
+    }
+
+    BookMst book = bookOpt.get();
+
+    if (book.getDletedFlag() != null && book.getDletedFlag()) {
+        ra.addFlashAttribute("errorMessage", "削除済みの書籍です");
+        return "redirect:/book/index";
+    }
+    
+    BookMst existing = bookOpt.get();
+    
+
 
     // 入力値と既存データが同じならリダイレクト（変更なし）
     boolean isSame = existing.getIsbn().equals(bookMstDto.getIsbn())
@@ -137,7 +152,7 @@ public class BookController {
     if (!existing.getIsbn().equals(bookMstDto.getIsbn())) {
         BookMst other = bookMstService.selectByIsbn(bookMstDto.getIsbn());
         if (other != null) {
-            result.rejectValue("isbn", "error.value", "このISBNはすでに使われています");
+            result.rejectValue("isbn", "error.value", "登録済みのISBNです");
         }
     }
 
@@ -154,5 +169,28 @@ public class BookController {
 
     ra.addFlashAttribute("message", "書籍情報が更新されました");
     return "redirect:/book/index";
-}
+    }
+
+    @GetMapping("/book/delete/{id}")
+    public String deleteBook(@PathVariable("id") Long id, RedirectAttributes ra) {
+        Optional<BookMst> bookOpt = bookMstService.findById(id);
+
+    if (bookOpt.isEmpty()) {
+        ra.addFlashAttribute("errorMessage", "書籍が存在しません");
+        return "redirect:/book/index";
+    }
+
+    BookMst book = bookOpt.get();
+
+    if (book.getDletedFlag() != null && book.getDletedFlag()) {
+        ra.addFlashAttribute("errorMessage", "削除済みの書籍です");
+        return "redirect:/book/index";
+    }
+
+    bookMstService.deleteById(id);
+    ra.addFlashAttribute("message", "書籍を削除しました");
+
+        return "redirect:/book/index";
+    }
+    
 }

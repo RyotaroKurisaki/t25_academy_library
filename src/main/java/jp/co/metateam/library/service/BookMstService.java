@@ -1,5 +1,6 @@
 package jp.co.metateam.library.service;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -51,11 +52,12 @@ public class BookMstService {
         BookMst bookMst = new BookMst();
         bookMst.setIsbn(bookMstDto.getIsbn());
         bookMst.setTitle(bookMstDto.getTitle());
+        bookMst.setDeletedFlag(Boolean.FALSE);
 
         this.bookMstRepository.save(bookMst);
     }
-    public BookMst selectById(Long id) {
-        return bookMstRepository.findById(id).orElse(null);
+    public Optional<BookMst> findById(Long id) {
+        return bookMstRepository.findById(id);
     }
     @Transactional
     public void update(BookMst bookMst) {
@@ -63,9 +65,20 @@ public class BookMstService {
     }
     @Transactional
     public void deleteById(Long id) {
-        bookMstRepository.deleteById(id);
-    }
+        Optional<BookMst> bookOpt = bookMstRepository.findById(id);
+        if (bookOpt.isEmpty()) {
+            throw new IllegalArgumentException("書籍が存在しません");
+        }
+        BookMst book = bookOpt.get();
 
+        if (book.getDletedFlag() != null && book.getDletedFlag()) {
+            throw new IllegalArgumentException("削除済みの書籍です");
+        }
+        //*論理削除処理 */
+        book.setDeletedFlag(true);
+        book.setDeletedAt(new Timestamp(System.currentTimeMillis()));
+        bookMstRepository.save(book);
+    }
 
 }
 
