@@ -99,7 +99,7 @@ public class BookController {
 
     BookMst book = bookOpt.get();
 
-    if (book.getDletedFlag() != null && book.getDletedFlag()) {
+    if (book.getDeletedFlag() != null && book.getDeletedFlag()) {
         ra.addFlashAttribute("errorMessage", "削除済みの書籍です");
         return "redirect:/book/index";
     }
@@ -132,7 +132,7 @@ public class BookController {
 
     BookMst book = bookOpt.get();
 
-    if (book.getDletedFlag() != null && book.getDletedFlag()) {
+    if (book.getDeletedFlag() != null && book.getDeletedFlag()) {
         ra.addFlashAttribute("errorMessage", "削除済みの書籍です");
         return "redirect:/book/index";
     }
@@ -171,26 +171,16 @@ public class BookController {
     return "redirect:/book/index";
     }
 
-    @GetMapping("/book/delete/{id}")
-    public String deleteBook(@PathVariable("id") Long id, RedirectAttributes ra) {
-        Optional<BookMst> bookOpt = bookMstService.findById(id);
-
-    if (bookOpt.isEmpty()) {
-        ra.addFlashAttribute("errorMessage", "書籍が存在しません");
-        return "redirect:/book/index";
+   @GetMapping("/book/delete/{id}")
+public String deleteBook(@PathVariable("id") Long id, RedirectAttributes ra) {
+    try {
+        bookMstService.deleteById(id);
+        ra.addFlashAttribute("message", "書籍を削除しました");
+    } catch (IllegalArgumentException e) {
+        ra.addFlashAttribute("errorMessage", e.getMessage());
     }
+    return "redirect:/book/index";
+}
 
-    BookMst book = bookOpt.get();
-
-    if (book.getDletedFlag() != null && book.getDletedFlag()) {
-        ra.addFlashAttribute("errorMessage", "削除済みの書籍です");
-        return "redirect:/book/index";
-    }
-
-    bookMstService.deleteById(id);
-    ra.addFlashAttribute("message", "書籍を削除しました");
-
-        return "redirect:/book/index";
-    }
     
 }

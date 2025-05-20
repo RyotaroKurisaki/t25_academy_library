@@ -57,7 +57,7 @@ public class BookMst {
     public Timestamp getDeletedAt() {
         return this.deletedAt;
     }
-    public Boolean getDletedFlag() {
+    public Boolean getDeletedFlag() {
          return this.deletedFlag;
     }
 
@@ -81,5 +81,10 @@ public class BookMst {
 
     public void setDeletedFlag(Boolean deletedFlag) {
         this.deletedFlag = deletedFlag;
+    }
+
+    public static void save(BookMst book) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'save'");
     }
 }

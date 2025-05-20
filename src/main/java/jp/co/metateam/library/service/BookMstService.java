@@ -66,15 +66,18 @@ public class BookMstService {
     @Transactional
     public void deleteById(Long id) {
         Optional<BookMst> bookOpt = bookMstRepository.findById(id);
+
         if (bookOpt.isEmpty()) {
             throw new IllegalArgumentException("書籍が存在しません");
         }
+
         BookMst book = bookOpt.get();
 
-        if (book.getDletedFlag() != null && book.getDletedFlag()) {
+        if (book.getDeletedFlag() != null && book.getDeletedFlag()) {
             throw new IllegalArgumentException("削除済みの書籍です");
         }
-        //*論理削除処理 */
+
+        // 論理削除処理
         book.setDeletedFlag(true);
         book.setDeletedAt(new Timestamp(System.currentTimeMillis()));
         bookMstRepository.save(book);
