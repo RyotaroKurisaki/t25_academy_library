@@ -51,6 +51,9 @@
                                     class="trash_btn">
                                         <img th:src="@{/images/icons/trash.png}" alt="削除アイコン">
                                     </a>
+
+
+
                                      <a th:href="@{/book/edit/{id}(id=${book.id})}" class="edit_btn">
                                         <img class="edit_btn" th:src="@{/images/icons/edit.png}" alt="編集アイコン">
                                      </a>
@@ -65,12 +68,5 @@
         </div>
     </div>
     <div th:replace="~{common :: footer}"></div>
-   <script th:inline="javascript">
-    /*<![CDATA[*/
-    const notFound = /*[[${notFound}]]*/ null;
-    if (notFound) {
-        alert(notFound);  // ポップアップ表示
-    }
-    /*]]>*/
-</script>
+
 </body>
